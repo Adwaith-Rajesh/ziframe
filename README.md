@@ -87,6 +87,8 @@ const zf = @import("ziframe");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer gpa.deinit()
+
     const alloc = gpa.allocator();
 
     // The columns of the DataFrame
