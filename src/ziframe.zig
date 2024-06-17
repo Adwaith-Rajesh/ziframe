@@ -7,6 +7,24 @@ const ArrayList = std.ArrayList;
 
 const csv = @import("csv.zig");
 
+const DataFrameShape = struct {
+    rows: usize,
+    cols: usize,
+
+    const Self = @This();
+
+    pub fn size(self: Self) usize {
+        return self.rows * self.cols;
+    }
+
+    pub fn format(self: Self, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
+        _ = fmt;
+        _ = options;
+
+        try writer.print("{}x{}", .{ self.rows, self.cols });
+    }
+};
+
 /// DataFrame.
 /// Stores 2D data.
 /// structure is immutable (i.e adding a new columns creates a new DataFrame)
@@ -42,6 +60,7 @@ pub fn DataFrame(comptime Columns: type) type {
             return new_df;
         }
 
+        /// create a new DF using a CSV file
         pub fn fromCSV(alloc: Allocator, file_name: []const u8, csv_config: csv.CSVConfig) !Self {
             const file = try std.fs.cwd().openFile(file_name, .{});
             defer file.close();
@@ -55,6 +74,14 @@ pub fn DataFrame(comptime Columns: type) type {
             }
 
             return new_df;
+        }
+
+        /// returns the shape of the DataFrame
+        pub fn shape(self: Self) DataFrameShape {
+            return .{
+                .rows = self.data.items.len,
+                .cols = @typeInfo(Columns).Struct.fields.len,
+            };
         }
 
         /// Add a new row to the DataFrame

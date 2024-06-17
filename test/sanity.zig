@@ -58,8 +58,10 @@ pub fn main() !void {
     // std.debug.print("\n{}\n\n", .{new_df});
     // std.debug.print("{any}\n", .{new_df.rows()[1..2]});
 
-    var df = try zf.DataFrame(ColValue).fromCSV(alloc, "./tmp/test.csv", .{});
+    var df = try zf.DataFrame(ColValue).fromCSV(alloc, "./tmp/test.csv", .{ .header = false });
     defer df.deinit();
 
     std.debug.print("\n{}\n", .{df});
+    std.debug.print("shape: {}\n", .{df.shape()});
+    std.debug.print("shape: {}\n", .{df.shape().size()});
 }
