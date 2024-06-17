@@ -40,11 +40,11 @@ pub fn main() !void {
         }
     }.getHeight;
 
-    var new_df = try zf.DataFrame(NewCols).formDF(alloc, ColValue, df, mapFn);
+    var new_df = try zf.DataFrame(NewCols).fromDF(alloc, ColValue, df, mapFn);
     defer new_df.deinit();
 
     // std.debug.print("{}\n", .{df});
-    for (new_df.iter()) |row| {
+    for (new_df.rows()) |row| {
         std.debug.print("row: {any}\n", .{row});
     }
 
