@@ -4,11 +4,21 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    // dependencies
+    // https://github.com/beho/zig-csv
+    const bcsv = b.dependency("bcsv", .{ // beho-csv
+        .optimize = optimize,
+        .target = target,
+    });
+
     const zf_mod = b.addModule("ziframe", .{
         .root_source_file = b.path("src/ziframe.zig"),
         .optimize = optimize,
         .target = target,
     });
+
+    // add csv mod
+    zf_mod.addImport("bcsv", bcsv.module("zig-csv"));
 
     const sanity_exe = b.addExecutable(.{
         .name = "sanity",

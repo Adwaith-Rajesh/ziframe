@@ -3,7 +3,12 @@
 
     .version = "0.0.0",
 
-    .dependencies = .{},
+    .dependencies = .{
+        .bcsv = .{
+            .url = "https://codeberg.org/Adwaith-Rajesh/beho-zig-csv/archive/main.tar.gz",
+            .hash = "1220146d3aa90abb11d5a7d7cd7eae68c307af8d814bfcd8128053dea1d3f8c04e21",
+        },
+    },
 
     .paths = .{
         "build.zig",
