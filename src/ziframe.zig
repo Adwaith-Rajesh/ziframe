@@ -32,10 +32,10 @@ pub fn DataFrame(comptime Columns: type) type {
 
         /// Create a new DF based on the prev.
         /// useful for adding and removing columns. ig
-        pub fn formDF(alloc: Allocator, T: type, prev: DataFrame(T), mapFn: fn (T) Columns) !Self {
+        pub fn formDF(alloc: Allocator, T: type, prev: DataFrame(T), map_fn: fn (T) Columns) !Self {
             var new_df = Self.init(alloc);
             for (prev.iter()) |row| {
-                try new_df.append(mapFn(row));
+                try new_df.append(map_fn(row));
             }
             return new_df;
         }
@@ -48,6 +48,13 @@ pub fn DataFrame(comptime Columns: type) type {
         /// get an iterator for the DataFrame
         pub fn iter(self: Self) []Columns {
             return self.data.items;
+        }
+
+        /// Apply a function over the DataFrame
+        pub fn map(self: *Self, map_fn: fn (*Columns) anyerror!void) !void {
+            for (self.iter()) |*row| {
+                try map_fn(row);
+            }
         }
 
         /// release all memory allocated by the DataFrame

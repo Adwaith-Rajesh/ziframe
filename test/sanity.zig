@@ -47,4 +47,13 @@ pub fn main() !void {
     for (new_df.iter()) |row| {
         std.debug.print("row: {any}\n", .{row});
     }
+
+    const sqrFn = struct {
+        pub fn sg(row: *NewCols) !void {
+            row.*.height *= 2;
+        }
+    }.sg;
+
+    try new_df.map(sqrFn);
+    std.debug.print("\n{}\n", .{new_df});
 }
