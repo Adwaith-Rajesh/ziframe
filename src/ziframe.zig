@@ -5,6 +5,9 @@ const stdout = std.io.getStdOut().writer();
 const Allocator = std.mem.Allocator;
 const ArrayList = std.ArrayList;
 
+/// DataFrame.
+/// Stores 2D data.
+/// structure is immutable (i.e adding a new columns creates a new DataFrame)
 pub fn DataFrame(comptime Columns: type) type {
     if (!(@typeInfo(Columns) == .Struct)) {
         @compileError("Columns must be of type struct, found " ++ @typeName(Columns));
@@ -27,9 +30,20 @@ pub fn DataFrame(comptime Columns: type) type {
             };
         }
 
+        /// Create a new DF based on the prev.
+        /// useful for adding and removing columns. ig
+        // pub fn formPrevInit(alloc: Allocator, T: type, prev: DataFrame(T), mapFn: fn (DataFrame(T)) Columns) Self {
+        //     var new_df: _DataFrame = .{ .data = _DataFrame.init(alloc) };
+        // }
+
         /// Add a new row to the DataFrame
         pub fn append(self: *Self, data: Columns) !void {
             try self.data.append(data);
+        }
+
+        /// get an iterator for the DataFrame
+        pub fn iter(self: Self) []Columns {
+            return self.data.items;
         }
 
         /// release all memory allocated by the DataFrame
