@@ -11,6 +11,7 @@ pub fn main() !void {
     const ColValue = struct {
         id: u16 = 3,
         age: u32,
+        marks: f64,
     };
 
     // var df = zf.DataFrame(ColValue).init(alloc);
