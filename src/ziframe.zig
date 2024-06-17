@@ -119,7 +119,7 @@ pub fn DataFrame(comptime Columns: type) type {
             for (self.data.items, 0..) |row, idx| {
                 try writer.print("{} ", .{idx});
                 inline for (column_fields) |cf| {
-                    try writer.print(if (@typeInfo(cf.type) == .Float) " {:.7} " else " {any}", .{@field(row, cf.name)});
+                    try writer.print(if (@typeInfo(cf.type) == .Float) " {d:.7} " else " {any}", .{@field(row, cf.name)});
                 }
                 try writer.print("\n", .{});
             }
