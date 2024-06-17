@@ -24,17 +24,27 @@ pub fn main() !void {
     try df.append(.{ .age = 45 });
 
     // add a new col -> creates a new DF
-    // const NewColVal = struct {
-    //     id: u16 = 3,
-    //     age: u32,
-    //     height: f32,
-    // };
+    const NewCols = struct {
+        id: u16 = 3,
+        age: u32,
+        height: u32,
+    };
 
-    for (df.iter()) |row| {
-        std.debug.print("row: {any}\n", .{row});
-    }
+    const mapFn = struct {
+        pub fn getHeight(row: ColValue) NewCols {
+            return .{
+                .id = row.id,
+                .age = row.age,
+                .height = @as(u32, @intCast(row.id)) + row.age,
+            };
+        }
+    }.getHeight;
 
-    // var new_df = zf.DataFrame(NewCols).formPrev(ColValue, df, );
+    var new_df = try zf.DataFrame(NewCols).formDF(alloc, ColValue, df, mapFn);
+    defer new_df.deinit();
 
     // std.debug.print("{}\n", .{df});
+    for (new_df.iter()) |row| {
+        std.debug.print("row: {any}\n", .{row});
+    }
 }

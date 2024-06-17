@@ -32,9 +32,13 @@ pub fn DataFrame(comptime Columns: type) type {
 
         /// Create a new DF based on the prev.
         /// useful for adding and removing columns. ig
-        // pub fn formPrevInit(alloc: Allocator, T: type, prev: DataFrame(T), mapFn: fn (DataFrame(T)) Columns) Self {
-        //     var new_df: _DataFrame = .{ .data = _DataFrame.init(alloc) };
-        // }
+        pub fn formDF(alloc: Allocator, T: type, prev: DataFrame(T), mapFn: fn (T) Columns) !Self {
+            var new_df = Self.init(alloc);
+            for (prev.iter()) |row| {
+                try new_df.append(mapFn(row));
+            }
+            return new_df;
+        }
 
         /// Add a new row to the DataFrame
         pub fn append(self: *Self, data: Columns) !void {
