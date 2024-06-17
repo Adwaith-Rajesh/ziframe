@@ -52,10 +52,12 @@ pub fn DataFrame(comptime Columns: type) type {
 
         /// Create a new DF based on the prev.
         /// useful for adding and removing columns. ig
-        pub fn fromDF(alloc: Allocator, T: type, prev: DataFrame(T), map_fn: fn (T) Columns) !Self {
+        pub fn fromDF(alloc: Allocator, T: type, prev: DataFrame(T), map_fn: fn (T) ?Columns) !Self {
             var new_df = Self.init(alloc);
             for (prev.rows()) |row| {
-                try new_df.append(map_fn(row));
+                if (map_fn(row)) |new_row| {
+                    try new_df.append(new_row);
+                }
             }
             return new_df;
         }
