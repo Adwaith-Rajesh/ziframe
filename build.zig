@@ -41,6 +41,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .target = target,
     });
+    simple_test.root_module.addImport("ziframe", zf_mod);
 
     const run_simple_test = b.addRunArtifact(simple_test);
 

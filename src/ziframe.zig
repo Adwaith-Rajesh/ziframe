@@ -5,6 +5,8 @@ const stdout = std.io.getStdOut().writer();
 const Allocator = std.mem.Allocator;
 const ArrayList = std.ArrayList;
 
+const csv = @import("csv.zig");
+
 /// DataFrame.
 /// Stores 2D data.
 /// structure is immutable (i.e adding a new columns creates a new DataFrame)
@@ -40,6 +42,21 @@ pub fn DataFrame(comptime Columns: type) type {
             return new_df;
         }
 
+        pub fn fromCSV(alloc: Allocator, file_name: []const u8, csv_config: csv.CSVConfig) !Self {
+            const file = try std.fs.cwd().openFile(file_name, .{});
+            defer file.close();
+
+            var new_df = Self.init(alloc);
+            var csv_iterator = try csv.CsvToColumnIterator(std.fs.File.Reader, Columns).init(alloc, file.reader(), csv_config);
+            defer csv_iterator.deinit();
+
+            while (try csv_iterator.next()) |row| {
+                try new_df.append(row);
+            }
+
+            return new_df;
+        }
+
         /// Add a new row to the DataFrame
         pub fn append(self: *Self, data: Columns) !void {
             try self.data.append(data);
@@ -66,13 +83,18 @@ pub fn DataFrame(comptime Columns: type) type {
         pub fn format(self: Self, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
             _ = options;
             _ = fmt;
+            try writer.print("index ", .{});
             inline for (column_fields) |cf| {
                 try writer.print("{s} ", .{cf.name});
             }
             try writer.print("\n", .{});
 
             for (self.data.items, 0..) |row, idx| {
-                try writer.print("{} {any}\n", .{ idx, row });
+                try writer.print("{} ", .{idx});
+                inline for (column_fields) |cf| {
+                    try writer.print("{any} ", .{@field(row, cf.name)});
+                }
+                try writer.print("\n", .{});
             }
         }
     };
